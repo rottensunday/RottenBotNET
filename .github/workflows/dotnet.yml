@@ -37,12 +37,14 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Login to Azure Docker
-    - uses: azure/docker-login@v1
+      uses: azure/docker-login@v1
       with:
         login-server: rottenbaseregistry.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
-    - run: |
+        
+    - name: Build and push docker image
+      run: |
         docker build ./NETDiscordBot -t rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
         docker push rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
         
