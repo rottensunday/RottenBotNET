@@ -1,79 +1,71 @@
 ﻿namespace NETDiscordBot
 {
     using System;
+    using System.Linq;
     using System.Net.Http;
-    using System.Threading.Tasks;
-    using Discord;
+    using System.Security.Cryptography.X509Certificates;
+    using Azure.Extensions.AspNetCore.Configuration.Secrets;
+    using Azure.Identity;
+    using Azure.Security.KeyVault.Secrets;
     using Discord.Commands;
     using Discord.WebSocket;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Services;
 
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
-            => new Program().MainAsync().GetAwaiter().GetResult();
+            => CreateHostBuilder().Build().Run();
 
-        // private Program()
-        // {
-        //     this._client = new DiscordSocketClient();
-        //     
-        //     _client.Log += Log;
-        //     _client.Ready += ReadyAsync;
-        //     _client.MessageReceived += MessageReceivedAsync;
-        // }
+        private static IHostBuilder CreateHostBuilder()
+            =>
+                Host.CreateDefaultBuilder()
+                    .ConfigureServices((_, services) =>
+                    {
+                        ConfigureServices(services);
+                        services.AddHostedService<MainService>();
+                    })
+                    .ConfigureAppConfiguration((context, config) =>
+                    {
+                        var builtConfig = config.Build();
+                        
+                        if (context.HostingEnvironment.IsProduction())
+                        {
+                            var secretClient = new SecretClient(
+                                new Uri(builtConfig["KeyVaultUrl"]),
+                                new DefaultAzureCredential());
+                            
+                            config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+                        }
+                        else if (context.HostingEnvironment.IsDevelopment())
+                        {
+                            using var store = new X509Store(StoreLocation.CurrentUser);
+                            store.Open(OpenFlags.ReadOnly);
+                            var certs = store.Certificates.Find(
+                                X509FindType.FindByThumbprint,
+                                builtConfig["AzureADCertThumbprint"], false);
+
+                            config.AddAzureKeyVault(
+                                new Uri(builtConfig["KeyVaultUrl"]),
+                                new ClientCertificateCredential(
+                                    builtConfig["AzureADDirectoryId"], 
+                                    builtConfig["AzureADApplicationId"], 
+                                    certs.OfType<X509Certificate2>().Single()),
+                                new KeyVaultSecretManager());
+                            store.Close();
+                        }
+                    });
         
-        private async Task MainAsync()
+        private static void ConfigureServices(IServiceCollection collection)
         {
-            await using var services = ConfigureServices();
-            var client = services.GetRequiredService<DiscordSocketClient>();
-            client.Log += Log;
-            services.GetRequiredService<CommandService>().Log += Log;
-            var token = "";
-            await client.LoginAsync(TokenType.Bot, token);
-            await client.StartAsync();
-
-            await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
-
-            await Task.Delay(-1);
-        }
-
-        private Task Log(LogMessage msg)
-        {
-            Console.WriteLine(msg);
-            
-            return Task.CompletedTask;
-        }
-
-        // private Task ReadyAsync()
-        // {
-        //     Console.WriteLine($"{_client.CurrentUser} is connected!");
-        //
-        //     return Task.CompletedTask;
-        // }
-        //
-        // private async Task MessageReceivedAsync(SocketMessage message)
-        // {
-        //     if (message.Author.Id == _client.CurrentUser.Id)
-        //     {
-        //         return;
-        //     }
-        //
-        //     if (message.Content == "!ping")
-        //     {
-        //         await message.Channel.SendMessageAsync("pong!");
-        //     }
-        // }
-
-        private ServiceProvider ConfigureServices()
-        {
-            return new ServiceCollection()
+            collection
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
-                .AddSingleton<IDataAccessService, CosmosDbDataAccessService>()
-                .BuildServiceProvider();
+                .AddSingleton<IDataAccessService, CosmosDbDataAccessService>();
         }
     }
 }
