@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETDiscordBot", "NETDiscordBot\NETDiscordBot.csproj", "{28F41751-E6DF-4CE9-A75D-BD318D1657DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETDiscordBotTests", "NETDiscordBotTests\NETDiscordBotTests.csproj", "{994ABB7F-1EF9-4C00-BCDB-5353E12C97AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{28F41751-E6DF-4CE9-A75D-BD318D1657DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28F41751-E6DF-4CE9-A75D-BD318D1657DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28F41751-E6DF-4CE9-A75D-BD318D1657DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{994ABB7F-1EF9-4C00-BCDB-5353E12C97AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{994ABB7F-1EF9-4C00-BCDB-5353E12C97AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{994ABB7F-1EF9-4C00-BCDB-5353E12C97AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{994ABB7F-1EF9-4C00-BCDB-5353E12C97AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
