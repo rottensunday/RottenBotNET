@@ -13,13 +13,46 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
+
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      
+    - name: Publish
+      run: dotnet publish --no-build -c Release NETDiscordBot
+      
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Login to Azure Docker
+    - uses: azure/docker-login@v1
+      with:
+        login-server: rottenbaseregistry.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - run: |
+        docker build ./NETDiscordBot -t rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
+        docker push rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
+        
+    - name: Deploy to Azure Container Instances
+      uses: azure/aci-deploy@v1
+      with:
+        resource-group: discord-bot
+        dns-name-label: dupson1234523
+        image: rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
+        registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        name: discord-bot-name
+        location: 'west europe'

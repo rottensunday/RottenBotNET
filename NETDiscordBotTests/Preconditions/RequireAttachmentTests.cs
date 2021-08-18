@@ -28,7 +28,7 @@
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        [InlineData(0)]
+        [InlineData(123)]
         public async Task RequireAttachment_WithAttachments_ReturnsSuccess(int attachmentsCount)
         {
             var requireAttachmentPrecondition = new RequireAttachment();
