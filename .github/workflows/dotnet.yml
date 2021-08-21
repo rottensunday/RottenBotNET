@@ -56,5 +56,5 @@ jobs:
         image: rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        name: discord-bot-name
+        name: discord-bot-name-2
         location: 'west europe'

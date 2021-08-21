@@ -2,5 +2,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0
 COPY bin/Release/net5.0/publish App/
 WORKDIR /App
 ENV DOTNET_ENVIRONMENT="Production"
-#ENTRYPOINT ["bash"]
-CMD tail -f /dev/null
+ENTRYPOINT ["dotnet", "NETDiscordBot.dll"]
