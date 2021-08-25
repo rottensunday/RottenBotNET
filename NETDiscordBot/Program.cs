@@ -1,6 +1,7 @@
 ﻿namespace NETDiscordBot
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Security.Cryptography.X509Certificates;
@@ -55,6 +56,17 @@
                                     certs.OfType<X509Certificate2>().Single()),
                                 new KeyVaultSecretManager());
                             store.Close();
+
+                            // Overwrite Azure Key Vault Token entry when we already have token defined for DEV env
+                            if (!string.IsNullOrEmpty(builtConfig["DiscordBotToken"]))
+                            {
+                                var initialData = new[]
+                                {
+                                    new KeyValuePair<string, string>("DiscordBotToken", builtConfig["DiscordBotToken"])
+                                };
+
+                                config.AddInMemoryCollection(initialData);
+                            }
                         }
                     });
         
