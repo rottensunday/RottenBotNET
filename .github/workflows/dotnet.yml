@@ -58,3 +58,4 @@ jobs:
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         name: discord-bot-name-2
         location: 'west europe'
+        restart-policy: OnFailure
