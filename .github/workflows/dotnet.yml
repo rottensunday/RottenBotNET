@@ -52,7 +52,6 @@ jobs:
       uses: azure/aci-deploy@v1
       with:
         resource-group: discord-bot
-        dns-name-label: dupson1234523
         image: rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
