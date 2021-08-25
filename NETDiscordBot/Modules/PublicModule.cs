@@ -28,7 +28,7 @@
         [Command("save")]
         [Alias("s", "sa", "sav")]
         [RequireAttachment]
-        public async Task SaveAttachmentAsync(string key)
+        public async Task SaveAttachmentAsync([Remainder] string key)
         {
             var attachmentUrl = this.Context.Message.Attachments.First().Url;
             Console.WriteLine($"Saving attachment with key: {key}, url: {attachmentUrl}");
@@ -40,7 +40,7 @@
 
         [Command("load")]
         [Alias("l", "lo", "loa")]
-        public async Task LoadAttachmentAsync(string key)
+        public async Task LoadAttachmentAsync([Remainder] string key)
         {
             Console.WriteLine($"Loading attachment with key: {key}");
 
