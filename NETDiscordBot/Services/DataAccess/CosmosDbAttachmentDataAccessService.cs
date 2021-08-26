@@ -1,4 +1,4 @@
-﻿namespace NETDiscordBot.Services
+﻿namespace NETDiscordBot.Services.DataAccess
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -8,17 +8,17 @@
     using Models;
     using Models.CosmosDb;
 
-    public class CosmosDbDataAccessService : IDataAccessService
+    public class CosmosDbAttachmentDataAccessService : IAttachmentDataAccessService
     {
         private string EndpointUrl => _configuration["EndpointUrl"];
         private string AuthorizationKey => _configuration["AuthorizationKey"];
         private string DatabaseId => _configuration["DatabaseId"];
-        private string ContainerId => _configuration["ContainerId"];
+        private string ContainerId => _configuration["UrlsContainerId"];
 
         private readonly CosmosContainer _attachmentsContainer;
         private readonly IConfiguration _configuration;
 
-        public CosmosDbDataAccessService(
+        public CosmosDbAttachmentDataAccessService(
             IConfiguration configuration)
         {
             this._configuration = configuration;

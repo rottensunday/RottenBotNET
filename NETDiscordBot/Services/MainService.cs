@@ -15,6 +15,7 @@
         private readonly CommandService _commandService;
         private readonly CommandHandlingService _commandHandlingService;
         private readonly IConfiguration _configuration;
+        private readonly StreamingMonitorService _streamingMonitorService;
         
         private string Token => this._configuration["DiscordBotToken"];
 
@@ -22,18 +23,21 @@
             DiscordSocketClient discordSocketClient,
             CommandService commandService,
             CommandHandlingService commandHandlingService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            StreamingMonitorService streamingMonitorService)
         {
             this._discordSocketClient = discordSocketClient;
             this._commandService = commandService;
             this._commandHandlingService = commandHandlingService;
             this._configuration = configuration;
+            this._streamingMonitorService = streamingMonitorService;
         }
         
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _discordSocketClient.Log += Log;
             _commandService.Log += Log;
+            _discordSocketClient.UserVoiceStateUpdated += this._streamingMonitorService.Handle;
             await _discordSocketClient.LoginAsync(TokenType.Bot, Token);
             await _discordSocketClient.StartAsync();
             await _commandHandlingService.InitializeAsync();

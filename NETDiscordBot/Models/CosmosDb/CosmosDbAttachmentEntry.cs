@@ -1,18 +1,17 @@
 ﻿namespace NETDiscordBot.Models.CosmosDb
 {
-    using System;
     using System.Text.Json.Serialization;
 
     public class CosmosDbAttachmentEntry
     {
         [JsonPropertyName("id")]
-        public string Id { get; init; }
+        public string Id { get; set; }
         
         [JsonPropertyName("key")]
-        public string Key { get; init; }
+        public string Key { get; set; }
         
         [JsonPropertyName("url")]
-        public string Url { get; init; }
+        public string Url { get; set; }
 
         public static CosmosDbAttachmentEntry BuildFromEntry(AttachmentEntry entry)
         {

@@ -3,19 +3,24 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Discord;
     using Discord.Commands;
+    using Discord.WebSocket;
     using Models;
     using Preconditions;
-    using Services;
+    using Services.DataAccess;
 
     public class PublicModule : ModuleBase<SocketCommandContext>
     {
-        private readonly IDataAccessService _dataAccess;
+        private readonly IAttachmentDataAccessService _attachmentDataAccess;
+        private readonly IStreamDataAccessService _streamDataAccess;
 
         public PublicModule(
-            IDataAccessService dataAccess)
+            IAttachmentDataAccessService attachmentDataAccess,
+            IStreamDataAccessService streamDataAccess)
         {
-            this._dataAccess = dataAccess;
+            this._attachmentDataAccess = attachmentDataAccess;
+            this._streamDataAccess = streamDataAccess;
         }
 
         [Command("ping")]
@@ -33,7 +38,7 @@
             var attachmentUrl = this.Context.Message.Attachments.First().Url;
             Console.WriteLine($"Saving attachment with key: {key}, url: {attachmentUrl}");
             
-            await this._dataAccess.SaveAttachmentEntry(new AttachmentEntry(key, attachmentUrl));
+            await this._attachmentDataAccess.SaveAttachmentEntry(new AttachmentEntry(key, attachmentUrl));
             await this.Context.Channel.SendMessageAsync("Dodano wpis mordo");
             Console.WriteLine("Succesfully saved attachment");
         }
@@ -46,7 +51,7 @@
 
             try
             {
-                var result = await this._dataAccess.LoadAttachmentEntry(key);
+                var result = await this._attachmentDataAccess.LoadAttachmentEntry(key);
                 await this.Context.Channel.SendMessageAsync(result.Url);
                 Console.WriteLine("Succesfully loaded attachment");
             }
@@ -62,10 +67,22 @@
         public async Task ListKeysAsync()
         {
             Console.WriteLine($"Listing all keys");
-            var keys = await this._dataAccess.FetchAttachmentKeys().ToListAsync();
+            var keys = await this._attachmentDataAccess.FetchAttachmentKeys().ToListAsync();
             var resultMessage = keys.Aggregate((x, y) => $"{x} \n {y}");
             await this.Context.Channel.SendMessageAsync(resultMessage);
             Console.WriteLine("Succesfully listed all keys");
+        }
+
+        [Command("lonelystreamer")]
+        [Alias("ls", "lonely", "streamer")]
+        public async Task FetchLonelyStreamingTime(IUser user)
+        {
+            Console.WriteLine($"Fetching lonely streaming time of user: {user.Username} with ID: {user.Id}");
+            var timeInSeconds = await this._streamDataAccess.FetchLonelyStreamingTime(user.Id.ToString());
+            var hours = Convert.ToSingle(timeInSeconds) / 3600;
+            await this.Context.Channel.SendMessageAsync(
+                $"{user.Username} streamował samotnie {hours:F3} godzin! Gratulacje.");
+            Console.WriteLine($"Succesfully fetched lonely streaming time of user {user.Username}");
         }
     }
 }

@@ -14,6 +14,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Services;
+    using Services.DataAccess;
 
     public static class Program
     {
@@ -77,7 +78,9 @@
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandlingService>()
                 .AddSingleton<HttpClient>()
-                .AddSingleton<IDataAccessService, CosmosDbDataAccessService>();
+                .AddSingleton<StreamingMonitorService>()
+                .AddSingleton<IAttachmentDataAccessService, CosmosDbAttachmentDataAccessService>()
+                .AddSingleton<IStreamDataAccessService, CosmosDbStreamDataAccessService>();
         }
     }
 }
