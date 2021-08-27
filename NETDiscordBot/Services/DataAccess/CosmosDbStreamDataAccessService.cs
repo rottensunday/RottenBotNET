@@ -43,7 +43,7 @@
         {
             var streamEntry = await FetchLatestStreamByUser(userId);
 
-            if (streamEntry is not null)
+            if (streamEntry is not null && streamEntry.StreamEnd is null)
             {
                 var now = DateTime.Now;
                 streamEntry.StreamEnd = now;
@@ -99,7 +99,7 @@
         private async Task<CosmosDbStreamEntry> FetchLatestStreamByUser(string userId)
             => await _streamsContainer
                 .GetItemQueryIterator<CosmosDbStreamEntry>(
-                    $"select top 1 * from c where c.userId=\"{userId}\" order by c.streamStart desc")
-                .FirstOrDefaultAsync();
+                    $"select top 1 * from c where c.userId=\"{userId}\" and ISNULL(c.streamEnd) order by c.streamStart desc")
+                .FirstOrDefaultAsync(entry => (DateTime.Now - entry.StreamStart).Hours < 24);
     }
 }
