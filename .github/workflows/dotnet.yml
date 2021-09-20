@@ -45,17 +45,17 @@ jobs:
         
     - name: Build and push docker image
       run: |
-        docker build ./NETDiscordBot -t rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
-        docker push rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
+        docker build ./NETDiscordBot -t rottenregistry.azurecr.io/discordbotnet:${{ github.sha }}
+        docker push rottenregistry.azurecr.io/discordbotnet:${{ github.sha }}
         
     - name: Deploy to Azure Container Instances
       uses: azure/aci-deploy@v1
       with:
-        resource-group: discord-bot
-        dns-name-label: asfgbnsd123
-        image: rottenbaseregistry.azurecr.io/discordbotnet:${{ github.sha }}
+        resource-group: RottenBotNET
+        dns-name-label: labek123321
+        image: rottenregistry.azurecr.io/discordbotnet:${{ github.sha }}
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        name: discord-bot-name-2
+        name: rotten-bot-net-instance
         location: 'west europe'
         restart-policy: OnFailure
