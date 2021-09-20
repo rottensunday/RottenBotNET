@@ -57,5 +57,5 @@ jobs:
         registry-username: ${{ secrets.REGISTRY_USERNAME }}
         registry-password: ${{ secrets.REGISTRY_PASSWORD }}
         name: rotten-bot-net-instance
-        location: 'west europe'
+        location: 'germanywestcentral'
         restart-policy: OnFailure
