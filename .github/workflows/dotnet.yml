@@ -39,7 +39,7 @@ jobs:
     - name: Login to Azure Docker
       uses: azure/docker-login@v1
       with:
-        login-server: rottenbaseregistry.azurecr.io
+        login-server: rottenregistry.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
         
