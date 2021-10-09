@@ -11,6 +11,9 @@
         [JsonPropertyName("userId")]
         public string UserId { get; set; }
         
+        [JsonPropertyName("userName")]
+        public string UserName { get; set; }
+        
         [JsonPropertyName("streamStart")]
         public DateTime StreamStart { get; set; }
         
@@ -31,6 +34,7 @@
                 StreamEnd = entry.StreamEnd,
                 StreamStart = entry.StreamStart,
                 UserId = entry.UserId,
+                UserName = entry.UserName,
                 LonelyStreamTimestamp = entry.LonelyStreamTimestamp,
                 TotalLonelyStreamTime = entry.TotalLonelyStreamTime
             };

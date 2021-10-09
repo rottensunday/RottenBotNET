@@ -1,6 +1,5 @@
 ﻿namespace NETDiscordBot.Services
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using DataAccess;
@@ -61,8 +60,8 @@
             SocketVoiceState currentState)
             => DetermineStreamEvent(user, previousState, currentState) switch
             {
-                StreamEvent.StreamStarted => await this.HandleStreamStarted(user.Id.ToString(), false),
-                StreamEvent.StreamStartedLonely => await this.HandleStreamStarted(user.Id.ToString(), true),
+                StreamEvent.StreamStarted => await this.HandleStreamStarted(user.Id.ToString(), user.Username, false),
+                StreamEvent.StreamStartedLonely => await this.HandleStreamStarted(user.Id.ToString(), user.Username, true),
                 StreamEvent.StreamEnded => await this.HandleStreamFinished(user.Id.ToString(), false),
                 StreamEvent.StreamEndedLonely => await this.HandleStreamFinished(user.Id.ToString(), true),
                 _ => false
@@ -104,9 +103,10 @@
 
         private async Task<bool> HandleStreamStarted(
             string userId,
+            string userName,
             bool isLonely)
         {
-            await this._streamDataAccessService.InitializeStreamEntry(userId, isLonely);
+            await this._streamDataAccessService.InitializeStreamEntry(userId, userName, isLonely);
 
             return true;
         }
@@ -120,18 +120,14 @@
             return true;
         }
 
-        private async Task<bool> HandleSwitchStateFromLonelyToNotLonely(string userId)
+        private async Task HandleSwitchStateFromLonelyToNotLonely(string userId)
         {
             await this._streamDataAccessService.SwitchStateFromLonelyToNotLonely(userId);
-
-            return true;
         }
 
-        private async Task<bool> HandleSwitchStateFromNotLonelyToLonely(string userId)
+        private async Task HandleSwitchStateFromNotLonelyToLonely(string userId)
         {
             await this._streamDataAccessService.SwitchStateFromNotLonelyToLonely(userId);
-
-            return true;
         }
     }
 }
